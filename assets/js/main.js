@@ -1,7 +1,28 @@
 let moviesList = null;
 
+const createElement = ({
+  type,
+  attrs,
+  container = null,
+  event = null,
+  handler = null,
+  position = 'append',
+}) => {
+  const el = document.createElement(type);
+
+  Object.keys(attrs).forEach((key) => {
+    el.setAttribute(key, attrs[key]);
+  });
+
+  if (position === 'append') container.append(el);
+  if (position === 'prepend') container.prepend(el);
+
+  return el;
+};
+
 const createStyle = () => {
   const headStyle = document.createElement('style');
+
   headStyle.innerHTML = `
 * {
   box-sizing: border-box;
@@ -31,31 +52,36 @@ body {
 }
 
 const createMarkup = () => {
-  const container = document.createElement('div');
-  const movies = document.createElement('div');
+  const container = createElement({
+    type: 'div',
+    attrs: { class: 'container' },
+    container: document.body,
+    position: 'prepend',
+  });
 
-  container.setAttribute('class', 'container');
-  movies.setAttribute('class', 'movies');
-
-  container.append(movies);
-  document.body.prepend(container);
+  createElement({
+    type: 'div',
+    attrs: { class: 'movies' },
+    container,
+  });
 
   moviesList = document.querySelector('.movies');
 };
 
 const addMoviesToList = (movie) => {
-  const item = document.createElement('div');
-  const img = document.createElement('img');
+  const item = createElement({ type: 'div', attrs: { class: 'movie' },container: moviesList});
 
-  item.setAttribute('class', 'movie')
-  img.setAttribute('class', 'movie__image')
-  img.src = movie.Poster
-  img.alt = `${movie.Title}, ${movie.Year}`
-  img.title = `${movie.Title}, ${movie.Year}`
+  const img = createElement({
+    type: 'img',
+    attrs: {
+      class: 'movie__image',
+      src: /^http|https:\/\//i.test(movie.Poster) ? movie.Poster : 'assets/img/img_not_available.png',
+      alt: `${movie.Title}, ${movie.Year}`,
+      title: `${movie.Title}, ${movie.Year}`,
+    },
+    container: item,
+  });
 
-  item.append(img);
-  moviesList.append(item);
-  console.log(movie);
 };
 
 createStyle();
@@ -65,9 +91,8 @@ const getData = (url) => fetch(url)
   .then((res) => res.json())
   .then((data) => data.Search);
 
-const search = 'Iron Man';
+const search = 'abd';
 
 getData(`http://www.omdbapi.com/?apikey=18b8609f&s=${search}`)
   .then((movies) => movies.forEach((movie) => addMoviesToList(movie)))
   .catch((err) => console.log(err));
-
