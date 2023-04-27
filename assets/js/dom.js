@@ -1,4 +1,6 @@
 export let moviesList = null;
+export let inputSearch = null;
+export let triggerMode = false;
 
 export const createElement = ({
   type,
@@ -15,8 +17,9 @@ export const createElement = ({
     else el.setAttribute(key, attrs[key]);
   });
 
-  if (position === 'append') container.append(el);
-  if (position === 'prepend') container.prepend(el);
+  if (container && position === 'append') container.append(el);
+  if (container && position === 'prepend') container.prepend(el);
+  if (event && handler && typeof handler === 'function') el.addEventListener(event, handler);
 
   return el;
 };
@@ -125,13 +128,13 @@ export const createMarkup = () => {
     attrs: {
       for: "search",
       class: "search__label-input",
-      innerHTML: 'Movie Search'
+      innerHTML: 'Search'
     },
     container: inputBox
   });
 
   //input.search__input
-  createElement({
+  inputSearch = createElement({
     type: 'input',
     attrs: {
       type: 'search',
@@ -150,7 +153,9 @@ export const createMarkup = () => {
       id: 'checkbox',
       class: "search__checkbox",
     },
-    container: checkBox
+    container: checkBox,
+    event: 'click',
+    handler: () => triggerMode = !triggerMode
   });
 
   //label.search__label-checkbox
@@ -165,7 +170,7 @@ export const createMarkup = () => {
   });
 
   //div.movies
-  moviesList = createElement({ type: 'div', attrs: { class: 'movies' }, container});
+  moviesList = createElement({ type: 'div', attrs: { class: 'movies' }, container });
 };
 
 export const addMoviesToList = (movie) => {
@@ -182,3 +187,7 @@ export const addMoviesToList = (movie) => {
     container: item,
   });
 };
+
+export const clearMoviesMarkup = (el) => {
+  el && (el.innerHTML = '');
+}

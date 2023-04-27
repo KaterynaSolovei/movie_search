@@ -9,8 +9,8 @@ async function deleteData(url) {
 }
 
 deleteData('https://jsonplaceholder.typicode.com/posts/12')
-.then((data) => console.log(data))
-.catch((err) => console.log(err));
+  .then((data) => console.log(data))
+  .catch((err) => console.log(err));
 
 
 /*
